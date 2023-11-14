@@ -1,4 +1,4 @@
-package com.vinicius.springhotel.models;
+package com.vinicius.springhotel.domain;
 
 import java.util.Collection;
 import java.util.List;
@@ -8,9 +8,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Setter
 @MappedSuperclass
 public abstract class SecurityUser implements UserDetails {

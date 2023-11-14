@@ -26,11 +26,14 @@ public class WebSecurityConfig {
 			throws Exception {
 
 		MvcRequestMatcher.Builder mvcRequestMatcher = new MvcRequestMatcher.Builder(introspector);
+		http.csrf(csrf -> csrf.disable());
 		http.httpBasic(Customizer.withDefaults())
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers(PathRequest.toH2Console()).permitAll()
 						.requestMatchers(mvcRequestMatcher.pattern("/open")).permitAll()
-						.anyRequest().authenticated());
+						.requestMatchers(mvcRequestMatcher.pattern("/login")).permitAll()
+						.requestMatchers(mvcRequestMatcher.pattern("/register")).permitAll()
+						.anyRequest().permitAll());
 		return http.build();
 
 	}

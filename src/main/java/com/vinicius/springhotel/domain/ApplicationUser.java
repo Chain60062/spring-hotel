@@ -1,4 +1,4 @@
-package com.vinicius.springhotel.models;
+package com.vinicius.springhotel.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,6 +24,10 @@ public class ApplicationUser extends SecurityUser {
     @Email
     @NotNull
     private String email;
+
+    public ApplicationUser() {
+        super();
+    }
 
     public ApplicationUser(Long id, String username, String email, String authority, String password) {
         super(username, password, authority);

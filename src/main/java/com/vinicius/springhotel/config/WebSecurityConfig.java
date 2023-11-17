@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,17 +24,20 @@ public class WebSecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector)
 			throws Exception {
 
-		MvcRequestMatcher.Builder mvcRequestMatcher = new MvcRequestMatcher.Builder(introspector);
+		var mvcRequestMatcher = new MvcRequestMatcher.Builder(introspector);
 		http.csrf(csrf -> csrf.disable());
-		http.httpBasic(Customizer.withDefaults())
-				.authorizeHttpRequests(auth -> auth
-						.requestMatchers(PathRequest.toH2Console()).permitAll()
-						.requestMatchers(mvcRequestMatcher.pattern("/open")).permitAll()
-						.requestMatchers(mvcRequestMatcher.pattern("/login")).permitAll()
-						.requestMatchers(mvcRequestMatcher.pattern("/register")).permitAll()
-						.anyRequest().permitAll());
+		http.headers(frameOptions -> frameOptions.disable());
+		// http.httpBasic(Customizer.withDefaults())
+		http.authorizeHttpRequests(auth -> auth
+				.requestMatchers(mvcRequestMatcher.pattern("/open")).permitAll()
+				.requestMatchers(mvcRequestMatcher.pattern("/auth/login")).permitAll()
+				.requestMatchers(mvcRequestMatcher.pattern("/auth/register")).permitAll()
+				.requestMatchers(PathRequest.toH2Console()).permitAll()
+				.anyRequest().authenticated());
+				// .formLogin(form -> form.loginProcessingUrl("/auth/login")
+				// 		.defaultSuccessUrl("/success")
+				// 		.failureUrl("/fail"));
 		return http.build();
-
 	}
 
 	@Bean

@@ -5,7 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.vinicius.springhotel.domain.ApplicationUser;
+import com.vinicius.springhotel.domain.User;
 import com.vinicius.springhotel.repositories.UserRepository;
 
 import lombok.NoArgsConstructor;
@@ -16,11 +16,11 @@ public class UserService {
     @Autowired
     private UserRepository repository;
 
-    public UserDetails findByUsername(String username) throws UsernameNotFoundException {
-        return repository.findByUsername(username);
+    public UserDetails findByEmail(String username) throws UsernameNotFoundException {
+        return repository.findByEmail(username);
     }
 
-    public ApplicationUser insert(ApplicationUser user) {
+    public User insert(User user) {
         return repository.save(user);
     }
 }

@@ -9,14 +9,4 @@ public class HomeController {
     String home() {
         return "Welcome home";
     }
-
-    @GetMapping("/success")
-    String success() {
-        return "Success";
-    }
-
-    @GetMapping("/fail")
-    String failure() {
-        return "Failed";
-    }
 }

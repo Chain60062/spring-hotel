@@ -23,20 +23,20 @@ public class WebSecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector)
 			throws Exception {
-
 		var mvcRequestMatcher = new MvcRequestMatcher.Builder(introspector);
 		http.csrf(csrf -> csrf.disable());
 		http.headers(frameOptions -> frameOptions.disable());
-		// http.httpBasic(Customizer.withDefaults())
+
+		http.logout(logout -> logout.logoutUrl("/auth/logout")
+		.invalidateHttpSession(true)
+		.deleteCookies("JSESSIONID"));
+
 		http.authorizeHttpRequests(auth -> auth
 				.requestMatchers(mvcRequestMatcher.pattern("/open")).permitAll()
 				.requestMatchers(mvcRequestMatcher.pattern("/auth/login")).permitAll()
 				.requestMatchers(mvcRequestMatcher.pattern("/auth/register")).permitAll()
 				.requestMatchers(PathRequest.toH2Console()).permitAll()
 				.anyRequest().authenticated());
-				// .formLogin(form -> form.loginProcessingUrl("/auth/login")
-				// 		.defaultSuccessUrl("/success")
-				// 		.failureUrl("/fail"));
 		return http.build();
 	}
 

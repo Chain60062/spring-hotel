@@ -1,31 +1,55 @@
 package com.vinicius.springhotel.domain;
 
-import java.util.Collection;
+import java.time.LocalDate;
 import java.util.List;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
+@EqualsAndHashCode
+@Table(name = "customers", uniqueConstraints = @UniqueConstraint(columnNames = {
+        "username", "email" }))
 @MappedSuperclass
-public abstract class SecurityUser implements UserDetails {
+public class User implements UserDetails {
+
     private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private String CPF;
+    @Email
     @NotNull
-    private String username;
+    private String email;
+    @NotNull
+    private String firstName;
+    @NotNull
+    private String lastName;
     @NotNull
     private String password;
     @NotNull
     private String authority;
+    @NotNull
+    private LocalDate dateOfBirth;
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public java.util.Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(() -> authority);
     }
 
@@ -51,16 +75,11 @@ public abstract class SecurityUser implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return email;
     }
 
     @Override
     public String getPassword() {
         return password;
     }
-
-    public String getAuthority() {
-        return authority;
-    }
-
 }

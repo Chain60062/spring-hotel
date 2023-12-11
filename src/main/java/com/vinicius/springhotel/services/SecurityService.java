@@ -16,7 +16,7 @@ public class SecurityService implements UserDetailsService {
     private UserRepository repository;
 
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var user =  repository.findByUsername(username);
+        var user =  repository.findByEmail(username);
         //UserDetailsService does not allow returning null
         if(user == null){
             throw new UsernameNotFoundException("Usuário não existe.");

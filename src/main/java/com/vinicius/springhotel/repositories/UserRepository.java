@@ -5,6 +5,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.vinicius.springhotel.domain.User;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, String> {
     public UserDetails findByEmail(String email);
 }

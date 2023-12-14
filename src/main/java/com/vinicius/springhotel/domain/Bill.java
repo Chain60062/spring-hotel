@@ -4,24 +4,30 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
-@Getter
-@Setter
 @Entity
 public class Bill implements Serializable {
+
+    public Bill(Long id, BigDecimal total) {
+        this.id = id;
+        this.total = total;
+    }
+
     private static final long serialVersionUID = 1L;
     @Id
-    private Integer Id;
-    private Payment payment;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private BigDecimal total;
-    private Booking booking;
+    @OneToOne(mappedBy = "bill")
+    private Payment payment;
 }

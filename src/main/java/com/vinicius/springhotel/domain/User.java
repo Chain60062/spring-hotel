@@ -1,39 +1,55 @@
 package com.vinicius.springhotel.domain;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@AllArgsConstructor
+@Data
 @NoArgsConstructor
-@EqualsAndHashCode
-@Table(name = "customers", uniqueConstraints = @UniqueConstraint(columnNames = {
-        "username", "email" }))
-@MappedSuperclass
+@AllArgsConstructor
+@Table(name = "customers", uniqueConstraints = @UniqueConstraint(columnNames = { "email" }))
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class User implements UserDetails {
+
+    public User(@Size(min = 11, max = 11) String cpf, @Email @NotNull String email, @NotNull String firstName,
+            @NotNull String lastName, @NotNull String password, @NotNull String authority,
+            @NotNull LocalDate dateOfBirth) {
+        this.cpf = cpf;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.authority = authority;
+        this.dateOfBirth = dateOfBirth;
+    }
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String CPF;
+    @Size(min = 11, max = 11)
+    @Column(length = 11)
+    private String cpf;
     @Email
     @NotNull
     private String email;
@@ -46,7 +62,14 @@ public class User implements UserDetails {
     @NotNull
     private String authority;
     @NotNull
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
+    @OneToMany(mappedBy = "customer")
+    private Set<Phone> phones = new HashSet<>();
+    @OneToMany(mappedBy = "customer")
+    private Set<Booking> bookings = new HashSet<>();
+    @OneToMany(mappedBy = "customer")
+    private Set<Address> addresses = new HashSet<>();
 
     @Override
     public java.util.Collection<? extends GrantedAuthority> getAuthorities() {

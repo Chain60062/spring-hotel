@@ -1,8 +1,9 @@
 package com.vinicius.springhotel.domain.dto;
 
+import java.time.LocalDate;
+
 import com.vinicius.springhotel.enums.Role;
 
-// equivalente ao ViewModel do Asp.Net core
-public record RegisterDTO(String firstName, String lastName, String password, Role role, String email) {
-
+public record RegisterDTO(String cpf, String firstName, String lastName, String password, Role role, String email,
+        LocalDate dateOfBirth) {
 }

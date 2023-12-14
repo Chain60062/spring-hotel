@@ -50,7 +50,7 @@ public class AuthenticationController {
     public ResponseEntity<UserDTO> login(@RequestBody @Valid LoginDTO loginRequest, HttpServletRequest request,
             HttpServletResponse response) {
         // create unauthenticated token
-        Authentication token = new UsernamePasswordAuthenticationToken(loginRequest.username(),
+        Authentication token = new UsernamePasswordAuthenticationToken(loginRequest.email(),
                 loginRequest.password());
         // authenticate it
         Authentication authentication = this.authenticationManager.authenticate(token);
@@ -64,10 +64,9 @@ public class AuthenticationController {
         // retrieve user information from the session
         User userPrincipal = (User) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
-        UserDTO user = new UserDTO(userPrincipal.getUsername(), userPrincipal.getEmail(),
-                userPrincipal.getAuthority());
+        UserDTO user = new UserDTO(userPrincipal.getEmail(), userPrincipal.getAuthority());
 
-        if (authentication.isAuthenticated() && user != null) {
+        if (authentication.isAuthenticated()) {
             return ResponseEntity.ok().body(user);
         } else {
             return ResponseEntity.badRequest().build();
@@ -76,18 +75,17 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<User> login(@RequestBody @Valid RegisterDTO registerRequest) {
-        if (service.findByUsername(registerRequest.email()) != null)
+        if (service.findByEmail(registerRequest.email()) != null)
             return ResponseEntity.badRequest().build();
 
         var argon2 = Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();
         String cipher = argon2.encode(registerRequest.password());
-        
-        var user = new User(null, registerRequest.firstName(), registerRequest.lastName(), registerRequest.email(),
-                registerRequest.role().name(), cipher);
 
+        var user = new User(registerRequest.cpf(), registerRequest.email(), registerRequest.firstName(),
+                registerRequest.lastName(), cipher, registerRequest.role().name(), registerRequest.dateOfBirth());
         user = service.insert(user);
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(user.getId())
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{cpf}").buildAndExpand(user.getCpf())
                 .toUri();
         return ResponseEntity.created(location).build();
     }

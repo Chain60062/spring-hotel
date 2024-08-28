@@ -1,4 +1,4 @@
-package viniciusmmenezes.springhotel.domain;
+package viniciusmmenezes.springhotel.models;
 
 import java.time.LocalDate;
 import java.util.HashSet;

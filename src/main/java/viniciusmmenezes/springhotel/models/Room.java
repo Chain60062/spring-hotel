@@ -1,8 +1,6 @@
-package viniciusmmenezes.springhotel.domain;
+package viniciusmmenezes.springhotel.models;
 
 import java.io.Serializable;
-
-import viniciusmmenezes.springhotel.domain.enums.RoomStatus;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import viniciusmmenezes.springhotel.models.enums.RoomStatus;
 
 @Data
 @NoArgsConstructor

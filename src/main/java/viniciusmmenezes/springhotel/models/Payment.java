@@ -1,8 +1,6 @@
-package viniciusmmenezes.springhotel.domain;
+package viniciusmmenezes.springhotel.models;
 
 import java.io.Serializable;
-
-import viniciusmmenezes.springhotel.domain.enums.PaymentMethods;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,6 +11,7 @@ import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import viniciusmmenezes.springhotel.models.enums.PaymentMethods;
 
 @Data
 @AllArgsConstructor

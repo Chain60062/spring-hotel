@@ -1,13 +1,14 @@
-package viniciusmmenezes.springhotel.domain;
+
+package viniciusmmenezes.springhotel.models;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,22 +17,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Rating implements Serializable {
+public class Bill implements Serializable {
 
-    public Rating(Long id, Short stars, String comment) {
+    public Bill(Long id, BigDecimal total) {
         this.id = id;
-        this.stars = stars;
-        this.comment = comment;
+        this.total = total;
     }
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Short stars;
-    private String comment;
-    private User user;
-    @ManyToOne
-    @JoinColumn(name = "unit_id")
-    private HotelUnit hotelUnit;
+    private BigDecimal total;
+    @OneToOne(mappedBy = "bill")
+    private Payment payment;
 }

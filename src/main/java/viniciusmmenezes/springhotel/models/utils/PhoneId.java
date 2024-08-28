@@ -1,4 +1,4 @@
-package viniciusmmenezes.springhotel.domain.utils;
+package viniciusmmenezes.springhotel.models.utils;
 
 import java.io.Serializable;
 

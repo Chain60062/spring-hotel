@@ -1,4 +1,4 @@
-package viniciusmmenezes.springhotel.domain;
+package viniciusmmenezes.springhotel.models;
 
 import java.io.Serializable;
 
@@ -15,12 +15,12 @@ import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import viniciusmmenezes.springhotel.models.enums.BookingStatus;
+
 import java.time.Instant;
 import java.util.Set;
 import java.util.HashSet;
 import org.hibernate.annotations.CreationTimestamp;
-
-import viniciusmmenezes.springhotel.domain.enums.BookingStatus;
 
 @Data
 @AllArgsConstructor

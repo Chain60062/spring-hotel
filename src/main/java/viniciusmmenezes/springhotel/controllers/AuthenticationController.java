@@ -19,10 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import viniciusmmenezes.springhotel.domain.User;
-import viniciusmmenezes.springhotel.domain.dto.LoginDTO;
-import viniciusmmenezes.springhotel.domain.dto.RegisterDTO;
-import viniciusmmenezes.springhotel.domain.dto.UserDTO;
+import viniciusmmenezes.springhotel.models.viewmodel.*;
+import viniciusmmenezes.springhotel.models.User;
 import viniciusmmenezes.springhotel.services.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,7 +31,7 @@ import lombok.AllArgsConstructor;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/auth")
-public class AuthenticationController {
+public final class AuthenticationController {
 
     private final AuthenticationManager authenticationManager;
     private final UserService service;
@@ -47,43 +45,26 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserDTO> login(@RequestBody @Valid LoginDTO loginRequest, HttpServletRequest request,
-            HttpServletResponse response) {
-        // create unauthenticated token
-        Authentication token = new UsernamePasswordAuthenticationToken(loginRequest.email(),
-                loginRequest.password());
-        // authenticate it
-        Authentication authentication = this.authenticationManager.authenticate(token);
-        // set new context
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        SecurityContext context = securityContextHolderStrategy.createEmptyContext();
-        // save it in the session
-        context.setAuthentication(authentication);
-        securityContextHolderStrategy.setContext(context);
-        securityContextRepository.saveContext(context, request, response);
+    public ResponseEntity<UserVM> login(@RequestBody @Valid LoginVM login, HttpServletRequest req,
+            HttpServletResponse res) {
+        // create authentication token
+        var auth = createAndAuthenticateToken(login);
+        // set new context and save it to the session
+        saveAuthenticationToSession(auth, req, res);
         // retrieve user information from the session
-        User userPrincipal = (User) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-        UserDTO user = new UserDTO(userPrincipal.getEmail(), userPrincipal.getAuthority());
+        UserVM user = retrieveUserSessionInfo();
 
-        if (authentication.isAuthenticated()) {
-            return ResponseEntity.ok().body(user);
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
+        return auth.isAuthenticated() ? ResponseEntity.ok().body(user) : ResponseEntity.badRequest().build();
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> login(@RequestBody @Valid RegisterDTO registerRequest) {
-        if (service.findByEmail(registerRequest.email()) != null)
+    public ResponseEntity<User> login(@RequestBody @Valid RegisterVM register) {
+        // check if email is already in use
+        if (service.findByEmail(register.email()) != null)
             return ResponseEntity.badRequest().build();
-
-        var argon2 = Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();
-        String cipher = argon2.encode(registerRequest.password());
-
-        var user = new User(registerRequest.cpf(), registerRequest.email(), registerRequest.firstName(),
-                registerRequest.lastName(), cipher, registerRequest.role().name(), registerRequest.dateOfBirth());
-        user = service.insert(user);
+        // encrypt request password and save user to database
+        String cipher = createCipher(register);
+        User user = createAndSaveUser(register, cipher);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{cpf}").buildAndExpand(user.getCpf())
                 .toUri();
@@ -93,5 +74,41 @@ public class AuthenticationController {
     @GetMapping("/open")
     public String open() {
         return "open route";
+    }
+
+    private Authentication createAndAuthenticateToken(LoginVM login) {
+        Authentication token = new UsernamePasswordAuthenticationToken(login.email(),
+                login.password());
+        // authenticate it
+        return this.authenticationManager.authenticate(token);
+    }
+
+    private void saveAuthenticationToSession(Authentication authentication, HttpServletRequest req,
+            HttpServletResponse res) {
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        SecurityContext ctx = securityContextHolderStrategy.createEmptyContext();
+        // save it in the session
+        ctx.setAuthentication(authentication);
+        securityContextHolderStrategy.setContext(ctx);
+        securityContextRepository.saveContext(ctx, req, res);
+    }
+
+    private UserVM retrieveUserSessionInfo() {
+        User userPrincipal = (User) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        return new UserVM(userPrincipal.getEmail(), userPrincipal.getAuthority());
+    }
+
+    private String createCipher(RegisterVM register) {
+        var argon2 = Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();
+        return argon2.encode(register.password());
+
+    }
+
+    private User createAndSaveUser(RegisterVM register, String cipher) {
+        var user = new User(register.cpf(), register.email(), register.firstName(),
+                register.lastName(), cipher, register.role().name(), register.dateOfBirth());
+
+        return service.insert(user);
     }
 }

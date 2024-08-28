@@ -1,13 +1,12 @@
-package viniciusmmenezes.springhotel.domain;
+package viniciusmmenezes.springhotel.models;
 
 import java.io.Serializable;
-
-import viniciusmmenezes.springhotel.domain.utils.PhoneId;
 
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import viniciusmmenezes.springhotel.models.utils.PhoneId;
 @Entity
 public class Phone implements Serializable {
     

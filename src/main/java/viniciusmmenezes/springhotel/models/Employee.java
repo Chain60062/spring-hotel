@@ -1,4 +1,4 @@
-package viniciusmmenezes.springhotel.domain;
+package viniciusmmenezes.springhotel.models;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

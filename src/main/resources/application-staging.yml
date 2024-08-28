@@ -1,0 +1,16 @@
+spring:
+  config:
+    import: env.properties
+  datasource:
+    url: jdbc:postgresql://localhost:5432/springboot_course
+    username: ${POSTGRESQL_USER}
+    password: ${POSTGRESQL_PASSWORD}
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            "[non_contextual_creation]": true
+        ddl-auto: update
+        "[format_sql]": true
+    show-sql: true
